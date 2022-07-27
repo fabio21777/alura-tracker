@@ -1,23 +1,40 @@
 <template>
-<div class="form">
+<el-col class="form">
   <el-form :inline="true" :model="formInline" >
-    <el-row :gutter="10">
-        <el-form-item label="Tarefa">
-        <el-input v-model="formInline.task" placeholder="Digite sua tarefa aqui" />
-        </el-form-item>
-        <el-row align="top">
-            <label  for="tempo">Tempo</label>
-            <p id="time">{{formInline.time}}</p>
-        </el-row>
-        <el-form-item>
-        <el-button type="primary"><el-icon><VideoPlay /></el-icon></el-button>
-        </el-form-item>
-        <el-form-item>
-        <el-button type="primary"><el-icon><VideoPause /></el-icon></el-button>
-        </el-form-item>
+    <el-row :gutter="10" flex justify="space-between">
+        <el-col :span="15">
+            <el-form-item label="Tarefa">
+              <el-input class="task" v-model="formInline.task" placeholder="Digite sua tarefa aqui" />
+            </el-form-item>
+        </el-col>
+
+        <el-col :span="2">
+          <el-row align="top">
+            <label class="tempo" for="tempo">Tempo</label>
+            <p id="time" class="tempo">{{formInline.time}}</p>
+          </el-row>
+        </el-col>
+
+        <el-col :span="2">
+          <el-form-item>
+            <el-button type="success"><el-icon><VideoPlay /></el-icon></el-button>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="2">
+          <el-form-item>
+            <el-button type="danger"><el-icon><VideoPause /></el-icon></el-button>
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="2">
+          <el-form-item>
+            <el-button type="primary">Salva</el-button>
+          </el-form-item>
+        </el-col>
     </el-row>
   </el-form>
-</div>
+</el-col>
 
 </template>
 
@@ -35,7 +52,7 @@ export default defineComponent({
       return {
       formInline: {
           task: '',
-          time: '00.00.00',
+          time: '00:00:00',
       },
       };
   },
@@ -49,7 +66,6 @@ export default defineComponent({
 
 <style lang="css" scoped>
 .form{
-    width: 100%;
     height: 100vh;
     margin-top: 30px;
 }
@@ -59,7 +75,11 @@ label{
 p{
     margin: 0%;
 }
-.el-form-item{
-    margin-left: 20px;
+
+.tempo{
+  color: #606266;
+}
+.task{
+  width:40em
 }
 </style>

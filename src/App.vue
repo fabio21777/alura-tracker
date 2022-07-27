@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <el-row :gutter="50">
       <el-col :span="6">
         <SideBar></SideBar>
@@ -31,12 +31,17 @@ export default defineComponent({
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600&display=swap');
 #app {
   margin: 0%;
   padding: 0%;
+  width: 100%;
 }
 body{
   margin: 0%;
   padding: 0%;
+  font-family:Montserrat;
+  display: flex;
+  flex-wrap: nowrap;
 }
 </style>
