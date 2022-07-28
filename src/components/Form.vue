@@ -3,33 +3,35 @@
   <el-form :inline="true" :model="formInline" >
     <el-row :gutter="10" flex justify="space-between">
         <el-col :span="15">
-            <el-form-item label="Tarefa">
-              <el-input class="task" v-model="formInline.task" placeholder="Digite sua tarefa aqui" />
+            <el-form-item class="input-task" label="Tarefa">
+              <el-col :span="24">
+                <el-input v-model="formInline.tarefa" placeholder="Digite a tarefa"></el-input>
+              </el-col>
             </el-form-item>
         </el-col>
 
         <el-col :span="2">
           <el-row align="top">
             <label class="tempo" for="tempo">Tempo</label>
-            <p id="time" class="tempo">{{formInline.time}}</p>
+            <p id="time" class="tempo">{{tempoDecorrido}}</p>
           </el-row>
         </el-col>
 
         <el-col :span="2">
           <el-form-item>
-            <el-button type="success"><el-icon><VideoPlay /></el-icon></el-button>
+            <el-button @click="iniciar()" type="success"><el-icon><VideoPlay /></el-icon></el-button>
           </el-form-item>
         </el-col>
 
         <el-col :span="2">
           <el-form-item>
-            <el-button type="danger"><el-icon><VideoPause /></el-icon></el-button>
+            <el-button @click="pausar()" type="danger"><el-icon><VideoPause /></el-icon></el-button>
           </el-form-item>
         </el-col>
 
         <el-col :span="2">
           <el-form-item>
-            <el-button type="primary">Salva</el-button>
+            <el-button type="primary">Salvar</el-button>
           </el-form-item>
         </el-col>
     </el-row>
@@ -42,7 +44,6 @@
 <script lang ="ts" >
 import { defineComponent } from 'vue';
 import { ElInput } from 'element-plus'
-import {VideoPlay}from '@element-plus/icons-vue'
 export default defineComponent({
   name: 'Form',
   components: {
@@ -50,17 +51,39 @@ export default defineComponent({
   },
   data() {
       return {
+      pausado: true,
+      cronometro: 0 as unknown as NodeJS.Timeout,
       formInline: {
-          task: '',
-          time: '00:00:00',
+          tarefa: '',
+          tempo: 0
       },
       };
+  },
+  computed: {
+    tempoDecorrido(): string {
+      return new Date(this.formInline.tempo * 1000).toISOString().substring(11, 19);
+    }
   },
   methods: {
     onSubmit(){
         console.log(this.formInline);
-    }
+    },
+
+    iniciar(){
+      if(this.pausado){
+        this.pausado = false;
+        this.cronometro = setInterval(() => {
+          this.formInline.tempo += 1;
+        }, 1000);
+      }
+      this.pausado = false;
+    },
+
+    pausar(){
+     this.pausado = true;
+     clearInterval(this.cronometro);
   },
+  }
 });
 </script>
 
@@ -81,5 +104,8 @@ p{
 }
 .task{
   width:40em
+}
+.input-task{
+  width: 100%;
 }
 </style>
