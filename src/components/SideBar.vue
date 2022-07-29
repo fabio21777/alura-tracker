@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1>
+    <h1 class="titulo">
       <img class="img-logo" src="../../public/logo-alura.png" alt="" />
     </h1>
   </header>
@@ -17,19 +17,16 @@ export default defineComponent({
 
 <style lang="css" scoped>
 header {
-  padding: 1rem;
   background: #0d3b66;
-  width: 100%;
+  height: 100%;
+  padding-top: 1em;
   height: 100vh;
 }
-@media only screen and (max-width: 768px) {
-  header {
-    padding: 2.5rem;
-    height: auto;
-  }
-}
 .img-logo {
-  width: 100%;
+  width: 80%;
+}
+.titulo{
+  text-align: center;
 }
 
 </style>
