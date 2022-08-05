@@ -11,10 +11,10 @@
     >
       <el-row flex justify="space-between">
         <el-col :span="15">
-          <el-form-item class="input-task" prop="tarefa" label="Tarefa">
+          <el-form-item class="input-task" prop="descricao" label="Tarefa">
             <el-col :span="24">
               <el-input
-                v-model="formInline.tarefa"
+                v-model="formInline.descricao"
                 placeholder="Digite a tarefa"
               ></el-input>
             </el-col>
@@ -46,7 +46,7 @@
 
         <el-col :span="2">
           <el-form-item>
-            <el-button  type="primary"  @click="submitForm(ruleFormRef)">Salvar</el-button>
+            <el-button type="primary" @click="submitForm(ruleFormRef)">Salvar</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -55,36 +55,61 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, reactive } from "vue";
-import { FormInstance, FormRules,ElNotification } from "element-plus";
+import { defineComponent, ref, computed, reactive, toRefs, onUpdated, watch } from "vue";
+import { FormInstance, FormRules, ElNotification } from "element-plus";
+import { Tarefa } from "../dtos/Tarefa";
 export default defineComponent({
-  setup() {
-    const formInline = reactive({
-      tarefa: "",
-      tempo: "",
-      tempoEmSegundos: 0,
-    });
+  emits: ["atualizarTarefas"],
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "Form",
+  props: {
+    tarefa: {
+      type: Tarefa,
+      default: () => new Tarefa(),
+    },
+    nome: {
+      type: String,
+      default: "",
+    },
+  },
+  setup(props, context) {
+    const { tarefa } = toRefs(props);
+    const { nome } = toRefs(props);
+    var formInline: Tarefa = reactive(new Tarefa());
+
     const cronometro = ref();
-
     const notificacaoSucesso = () => {
-        ElNotification({
-          title: 'Success',
-          message: 'Tarefa salva com sucesso!',
-          type: 'success',
-        })
-      }
+      ElNotification({
+        title: "Sucesso",
+        message: "Tarefa salva com sucesso!",
+        type: "success",
+      });
+    };
 
+    watch(tarefa.value, (newValue, oldValue) => {
+      prencherTarefa(newValue);
+    });
+
+    const prencherTarefa = (tf: Tarefa) => {
+      formInline.descricao = tf.descricao;
+      formInline.tempo = tf.tempo;
+      formInline.id = tf.id;
+      formInline.tempoEmSegundos = tf.tempoEmSegundos;
+    };
+
+    const atualizarTarefa = (tarefa: Tarefa) => {
+      context.emit("atualizarTarefas", tarefa);
+    };
     const pausado = ref(true);
 
     const formSize = ref("default");
     const ruleFormRef = ref<FormInstance>();
-
     const tempoDecorrido = computed(() => {
       return new Date(formInline.tempoEmSegundos * 1000).toISOString().substring(11, 19);
     });
 
     const rules = reactive<FormRules>({
-      tarefa: [
+      descricao: [
         { required: true, message: "Nome da tarefa é obrigatorio", trigger: "blur" },
         {
           min: 3,
@@ -102,19 +127,33 @@ export default defineComponent({
         pausado.value = false;
       }
     };
-
+    const zerarFormInline = () => {
+      formInline.tempoEmSegundos = 0;
+      formInline.descricao = "";
+      formInline.tempoEmSegundos = 0;
+      formInline.id = "";
+    };
     const pausar = () => {
       clearInterval(cronometro.value);
       pausado.value = true;
     };
 
+    const resetForm = (formEl: FormInstance | undefined) => {
+      if (!formEl) return;
+      formEl.resetFields();
+    };
 
     const submitForm = async (formEl: FormInstance | undefined) => {
+      pausar();
       if (!formEl) return;
       await formEl.validate((valid, fields) => {
         if (valid) {
-          console.log("submit!");
+          formInline.tempo = tempoDecorrido.value;
+          atualizarTarefa(formInline);
           notificacaoSucesso();
+          resetForm(formEl);
+          formInline.tempoEmSegundos = 0;
+          zerarFormInline();
         } else {
           console.log("error submit!", fields);
         }
@@ -151,7 +190,7 @@ p {
 .input-task {
   width: 100%;
 }
-.ruleForm{
+.ruleForm {
   padding-top: 30px;
 }
 </style>
